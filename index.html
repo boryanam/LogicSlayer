@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>LogicSlayer | Vanquish Complexity</title>
+    <title>LogicSlayer | Precision Export</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
     <style>
         :root {
             --sidebar-bg: #1e272e;
             --main-bg: #f5f6fa;
-            --accent: #ff3f34; /* New Slayer Red */
+            --accent: #ff3f34; 
             --accent-hover: #ef5777;
-            --text-editor: #dcdde1;
+            --text-editor: #78e08f;
         }
 
-        body { margin: 0; display: flex; height: 100vh; font-family: 'Inter', sans-serif; background: var(--main-bg); color: #2f3640; }
+        body { margin: 0; display: flex; height: 100vh; font-family: 'Inter', sans-serif; background: var(--main-bg); color: #2f3640; overflow: hidden; }
 
         .sidebar {
             width: 420px;
@@ -40,22 +40,15 @@
 
         .btn-snippet {
             background: #3d4e5f;
-            color: white;
-            border: none;
-            padding: 8px 4px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
+            color: white; border: none; padding: 8px 4px; border-radius: 4px;
+            font-size: 0.7rem; cursor: pointer; transition: all 0.2s;
         }
-
         .btn-snippet:hover { background: var(--accent); }
 
         textarea {
             flex: 1;
             background: #2f3640;
-            color: #78e08f;
+            color: var(--text-editor);
             border: 1px solid #4b6584;
             border-radius: 8px;
             padding: 15px;
@@ -68,45 +61,42 @@
 
         .btn-forge {
             background: var(--accent);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            margin-top: 15px;
-            box-shadow: 0 4px 0 #b33939;
-            transition: all 0.1s;
+            color: white; border: none; padding: 14px; border-radius: 8px;
+            font-weight: 800; font-size: 1rem; cursor: pointer;
+            text-transform: uppercase; margin-top: 15px;
+            box-shadow: 0 4px 0 #b33939; transition: all 0.1s;
         }
         .btn-forge:hover { background: var(--accent-hover); transform: translateY(-1px); }
         .btn-forge:active { transform: translateY(2px); box-shadow: 0 0px 0 #b33939; }
 
-        #status-box {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            min-height: 18px;
-            display: none;
-        }
+        #status-box { margin-top: 15px; padding: 10px; border-radius: 6px; font-size: 0.8rem; min-height: 18px; display: none; }
         .error { background: #eb4d4b22; color: #ff7675; border: 1px solid #ff7675; display: block !important; }
         .success { background: #20bf6b22; color: #2ecc71; border: 1px solid #2ecc71; display: block !important; }
 
         .viewport { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .toolbar { padding: 15px 30px; background: white; border-bottom: 1px solid #dcdde1; display: flex; justify-content: flex-end; }
+        .toolbar { padding: 15px 30px; background: white; border-bottom: 1px solid #dcdde1; display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
         
-        .btn-download { background: transparent; color: #4b6584; border: 1px solid #dcdde1; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        .btn-download:hover { background: #f1f2f6; }
+        #filename-input {
+            padding: 9px 12px;
+            border: 1px solid #dcdde1;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            width: 220px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        #filename-input:focus { border-color: var(--accent); }
+
+        .btn-export { 
+            background: #2f3640; color: white; border: none; padding: 10px 20px; 
+            border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+        .btn-export:hover { background: #4b6584; }
 
         #display {
-            flex: 1;
-            overflow: auto;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
+            flex: 1; overflow: auto; display: flex; justify-content: center;
+            align-items: center; padding: 40px;
             background-image: radial-gradient(#ced6e0 1px, transparent 1px);
             background-size: 30px 30px;
         }
@@ -128,10 +118,10 @@
     <label for="code-input">Logic Editor (LR Mode)</label>
     <textarea id="code-input" spellcheck="false">
 graph LR
-    Problem[Complex Mess] --> Analysis[Slayer Analysis]
-    Analysis --> Result[Clear Solution]
+    Input[New Logic] --> Forge{LogicSlayer}
+    Forge --> Package[SVG + MMD Bundle]
     
-    style Result fill:#ff3f34,color:white,stroke:none</textarea>
+    style Package fill:#ff3f34,color:white</textarea>
     
     <div id="status-box"></div>
     <button class="btn-forge" onclick="forgeFlow()">Forge Flow</button>
@@ -139,7 +129,8 @@ graph LR
 
 <div class="viewport">
     <div class="toolbar">
-        <button class="btn-download" onclick="downloadSVG()">Download SVG</button>
+        <input type="text" id="filename-input" value="logic-slayer-export" placeholder="Filename (no extension)">
+        <button class="btn-export" onclick="exportPackage()">Export Package (SVG + MMD)</button>
     </div>
     <div id="display">
         <div id="graph"></div>
@@ -157,6 +148,7 @@ graph LR
     const input = document.getElementById('code-input');
     const display = document.getElementById('graph');
     const statusBox = document.getElementById('status-box');
+    const filenameInput = document.getElementById('filename-input');
 
     async function forgeFlow() {
         const code = input.value.trim();
@@ -177,24 +169,44 @@ graph LR
         }
     }
 
-    function loadSnippet(type) {
-        if (type === 'process') {
-            input.value = "graph LR\n    Step1[Research] --> Step2[Planning]\n    Step2 --> Step3[Execution]\n    Step3 --> Step4[Review]";
-        } else if (type === 'decision') {
-            input.value = "graph LR\n    A[Start] --> B{Approved?}\n    B -- Yes --> C[Launch]\n    B -- No --> D[Iterate]\n    D --> A";
-        } else if (type === 'custom') {
-            input.value = "graph LR\n    subgraph Phase1\n    A[Backlog] --> B[Sprinting]\n    end\n    subgraph Phase2\n    B --> C[QA Testing]\n    C --> D[Release]\n    end\n    D --> E((Goal))\n\n    style E fill:#ff3f34,color:white";
-        }
-        forgeFlow();
+    function exportPackage() {
+        const svgElement = display.querySelector('svg');
+        if (!svgElement) return alert("Forge a flow first before exporting!");
+
+        let fileName = filenameInput.value.trim();
+        if (!fileName) fileName = "logic-slayer-export"; // Default fallback
+
+        const code = input.value;
+        const svgData = svgElement.outerHTML;
+
+        // 1. Download .mmd (Source)
+        triggerDownload(code, `${fileName}.mmd`, 'text/plain');
+
+        // 2. Download .svg (Visual)
+        triggerDownload(svgData, `${fileName}.svg`, 'image/svg+xml');
     }
 
-    function downloadSVG() {
-        const svg = display.querySelector('svg');
-        if (!svg) return alert("Forge a flow first!");
-        const blob = new Blob([svg.outerHTML], {type: 'image/svg+xml'});
+    function triggerDownload(content, name, type) {
+        const blob = new Blob([content], { type: type });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url; a.download = 'logicslayer-export.svg'; a.click();
+        a.href = url;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function loadSnippet(type) {
+        if (type === 'process') {
+            input.value = "graph LR\n    A[Step 1] --> B[Step 2]\n    B --> C[Step 3]";
+        } else if (type === 'decision') {
+            input.value = "graph LR\n    A[Start] --> B{Valid?}\n    B -- Yes --> C[Proceed]\n    B -- No --> A";
+        } else if (type === 'custom') {
+            input.value = "graph LR\n    subgraph Design\n    A[UX Audit] --> B[Wireframes]\n    end\n    subgraph Build\n    B --> C[Dev]\n    end\n    C --> D((Goal))\n\n    style D fill:#ff3f34,color:white";
+        }
+        forgeFlow();
     }
 
     window.onload = forgeFlow;
