@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>LogicSlayer | Precision Export</title>
+    <title>LogicSlayer | Styled Logic</title>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
     <style>
         :root {
@@ -34,14 +34,14 @@
         .snippet-bar {
             margin: 10px 0 20px 0;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
         }
 
         .btn-snippet {
             background: #3d4e5f;
-            color: white; border: none; padding: 8px 4px; border-radius: 4px;
-            font-size: 0.7rem; cursor: pointer; transition: all 0.2s;
+            color: white; border: none; padding: 10px 4px; border-radius: 4px;
+            font-size: 0.72rem; cursor: pointer; transition: all 0.2s;
         }
         .btn-snippet:hover { background: var(--accent); }
 
@@ -83,16 +83,12 @@
             font-size: 0.85rem;
             width: 220px;
             outline: none;
-            transition: border-color 0.2s;
         }
-        #filename-input:focus { border-color: var(--accent); }
 
         .btn-export { 
             background: #2f3640; color: white; border: none; padding: 10px 20px; 
             border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.85rem;
-            transition: background 0.2s;
         }
-        .btn-export:hover { background: #4b6584; }
 
         #display {
             flex: 1; overflow: auto; display: flex; justify-content: center;
@@ -108,20 +104,23 @@
     <div class="logo">LogicSlayer</div>
     <div class="tagline">Vanquish Complexity</div>
     
-    <label>Choose Snippet Type</label>
+    <label>Choose Your Weapon</label>
     <div class="snippet-bar">
         <button class="btn-snippet" onclick="loadSnippet('process')">Linear Process</button>
         <button class="btn-snippet" onclick="loadSnippet('decision')">Decision Path</button>
-        <button class="btn-snippet" onclick="loadSnippet('custom')">Custom (Roadmap)</button>
+        <button class="btn-snippet" onclick="loadSnippet('journey')">User Journey</button>
+        <button class="btn-snippet" onclick="loadSnippet('mindmap')">Mindmap</button>
+        <button class="btn-snippet" onclick="loadSnippet('roadmap')">Roadmap</button>
+        <button class="btn-snippet" onclick="loadSnippet('sankey')">Sankey</button>
     </div>
 
-    <label for="code-input">Logic Editor (LR Mode)</label>
+    <label for="code-input">Logic Editor</label>
     <textarea id="code-input" spellcheck="false">
 graph LR
-    Input[New Logic] --> Forge{LogicSlayer}
-    Forge --> Package[SVG + MMD Bundle]
+    Start[New Project] --> Logic{Apply Slayer}
+    Logic --> Success((Market Dominance))
     
-    style Package fill:#ff3f34,color:white</textarea>
+    style Success fill:#ff3f34,color:white</textarea>
     
     <div id="status-box"></div>
     <button class="btn-forge" onclick="forgeFlow()">Forge Flow</button>
@@ -129,12 +128,10 @@ graph LR
 
 <div class="viewport">
     <div class="toolbar">
-        <input type="text" id="filename-input" value="logic-slayer-export" placeholder="Filename (no extension)">
+        <input type="text" id="filename-input" value="slayer-export">
         <button class="btn-export" onclick="exportPackage()">Export Package (SVG + MMD)</button>
     </div>
-    <div id="display">
-        <div id="graph"></div>
-    </div>
+    <div id="display"><div id="graph"></div></div>
 </div>
 
 <script>
@@ -142,13 +139,13 @@ graph LR
         startOnLoad: false,
         theme: 'neutral',
         securityLevel: 'loose',
-        flowchart: { useMaxWidth: false, htmlLabels: true, curve: 'basis' }
+        gantt: { axisFormat: '%m/%d' },
+        sankey: { width: 800, height: 400 }
     });
 
     const input = document.getElementById('code-input');
     const display = document.getElementById('graph');
     const statusBox = document.getElementById('status-box');
-    const filenameInput = document.getElementById('filename-input');
 
     async function forgeFlow() {
         const code = input.value.trim();
@@ -160,7 +157,7 @@ graph LR
             display.innerHTML = "";
             const { svg } = await mermaid.render(id, code);
             display.innerHTML = svg;
-            statusBox.innerText = "Logic Slain. Flow forged.";
+            statusBox.innerText = "Logic Slain.";
             statusBox.className = "success";
             setTimeout(() => { statusBox.className = ""; }, 2000);
         } catch (e) {
@@ -171,30 +168,17 @@ graph LR
 
     function exportPackage() {
         const svgElement = display.querySelector('svg');
-        if (!svgElement) return alert("Forge a flow first before exporting!");
-
-        let fileName = filenameInput.value.trim();
-        if (!fileName) fileName = "logic-slayer-export"; // Default fallback
-
-        const code = input.value;
-        const svgData = svgElement.outerHTML;
-
-        // 1. Download .mmd (Source)
-        triggerDownload(code, `${fileName}.mmd`, 'text/plain');
-
-        // 2. Download .svg (Visual)
-        triggerDownload(svgData, `${fileName}.svg`, 'image/svg+xml');
+        if (!svgElement) return alert("Forge a flow first!");
+        const fileName = document.getElementById('filename-input').value || "slayer-export";
+        triggerDownload(input.value, `${fileName}.mmd`, 'text/plain');
+        triggerDownload(svgElement.outerHTML, `${fileName}.svg`, 'image/svg+xml');
     }
 
     function triggerDownload(content, name, type) {
         const blob = new Blob([content], { type: type });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = name;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        a.href = url; a.download = name; a.click();
         URL.revokeObjectURL(url);
     }
 
@@ -202,15 +186,20 @@ graph LR
         if (type === 'process') {
             input.value = "graph LR\n    A[Step 1] --> B[Step 2]\n    B --> C[Step 3]";
         } else if (type === 'decision') {
-            input.value = "graph LR\n    A[Start] --> B{Valid?}\n    B -- Yes --> C[Proceed]\n    B -- No --> A";
-        } else if (type === 'custom') {
-            input.value = "graph LR\n    subgraph Design\n    A[UX Audit] --> B[Wireframes]\n    end\n    subgraph Build\n    B --> C[Dev]\n    end\n    C --> D((Goal))\n\n    style D fill:#ff3f34,color:white";
+            input.value = "graph LR\n    A[Start] --> B{Approved?}\n    B -- Yes --> C[Launch]\n    B -- No --> D[Iterate]\n    D --> A\n\n    %% Custom Styling\n    style C fill:#2ecc71,color:white,stroke:#27ae60\n    style D fill:#f1c40f,color:black,stroke:#f39c12";
+        } else if (type === 'journey') {
+            input.value = "journey\n    title Onboarding Funnel\n    section Stage 1\n      Landing: 5: User\n      Sign-up: 3: User, System\n    section Stage 2\n      Tutorial: 4: User\n      First Value: 5: User";
+        } else if (type === 'mindmap') {
+            input.value = "mindmap\n  root((Product Strategy))\n    Growth\n      Referrals\n      SEO\n    Retention\n      Churn Audit\n      Engagement";
+        } else if (type === 'roadmap') {
+            input.value = "gantt\n    title 2026 Roadmap\n    dateFormat  YYYY-MM-DD\n    section Phase 1\n    Design       :a1, 2026-02-01, 30d\n    Build        :after a1, 45d\n    section Phase 2\n    Test         :2026-04-15, 20d";
+        } else if (type === 'sankey') {
+            input.value = "sankey-beta\n    Budget, Marketing, 5000\n    Budget, Engineering, 10000\n    Marketing, LeadGen, 3000\n    Marketing, Awareness, 2000";
         }
         forgeFlow();
     }
 
     window.onload = forgeFlow;
 </script>
-
 </body>
 </html>
